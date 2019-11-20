@@ -47,18 +47,23 @@ class FormBuilderSignaturePad extends StatefulWidget {
       _FormBuilderSignaturePadState();
 }
 
-class _FormBuilderSignaturePadState extends State<FormBuilderSignaturePad> {
+class _FormBuilderSignaturePadState extends State<FormBuilderSignaturePad>  implements FormBuilderBase {
   bool _readOnly = false;
   Uint8List _value;
   List<Point> _points;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   final GlobalKey<SignatureState> _signatureKey = GlobalKey<SignatureState>();
   FormBuilderState _formState;
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+  }
 
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _points = widget.points;
     super.initState();
   }

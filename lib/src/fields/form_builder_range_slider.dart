@@ -45,16 +45,21 @@ class FormBuilderRangeSlider extends StatefulWidget {
   _FormBuilderRangeSliderState createState() => _FormBuilderRangeSliderState();
 }
 
-class _FormBuilderRangeSliderState extends State<FormBuilderRangeSlider> {
+class _FormBuilderRangeSliderState extends State<FormBuilderRangeSlider> implements FormBuilderBase  {
   bool _readOnly = false;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   FormBuilderState _formState;
   RangeValues _initialValue;
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+  }
 
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)
             ? _formState.initialValue[widget.attribute]

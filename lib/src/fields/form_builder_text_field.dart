@@ -90,17 +90,27 @@ class FormBuilderTextField extends StatefulWidget {
   FormBuilderTextFieldState createState() => FormBuilderTextFieldState();
 }
 
-class FormBuilderTextFieldState extends State<FormBuilderTextField> {
+class FormBuilderTextFieldState extends State<FormBuilderTextField> implements FormBuilderBase {
   bool _readOnly = false;
   TextEditingController _effectiveController;
   FormBuilderState _formState;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   String _initialValue;
 
+  getValue(){
+    return _fieldKey.currentState.value;
+  }
+
+  setValue (value) {
+    _fieldKey.currentState.didChange(value);
+    _effectiveController.text = value.toString();
+  }
+  get fieldKey => _fieldKey;
+
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)
             ? _formState.initialValue[widget.attribute]

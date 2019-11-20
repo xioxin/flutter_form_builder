@@ -124,7 +124,7 @@ class FormBuilderDateRangePicker extends StatefulWidget {
 }
 
 class FormBuilderDateRangePickerState
-    extends State<FormBuilderDateRangePicker> {
+    extends State<FormBuilderDateRangePicker> implements FormBuilderBase  {
   bool _readOnly = false;
   TextEditingController _controller;
   FormBuilderState _formState;
@@ -132,6 +132,12 @@ class FormBuilderDateRangePickerState
   List<DateTime> _initialValue;
   List<DateTime> _currentValue;
   FocusNode _focusNode;
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+    _effectiveController.text = _valueToText();
+  }
 
   List<DateTime> get value => _currentValue ?? [];
 
@@ -143,7 +149,7 @@ class FormBuilderDateRangePickerState
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = _currentValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)
             ? _formState.initialValue[widget.attribute]

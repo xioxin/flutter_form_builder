@@ -87,16 +87,21 @@ class FormBuilderSwitch extends StatefulWidget {
   _FormBuilderSwitchState createState() => _FormBuilderSwitchState();
 }
 
-class _FormBuilderSwitchState extends State<FormBuilderSwitch> {
+class _FormBuilderSwitchState extends State<FormBuilderSwitch> implements FormBuilderBase  {
   bool _readOnly = false;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   FormBuilderState _formState;
   bool _initialValue;
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+  }
 
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)
             ? _formState.initialValue[widget.attribute]

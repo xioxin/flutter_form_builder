@@ -85,7 +85,7 @@ class FormBuilderTypeAhead<T> extends StatefulWidget {
       _FormBuilderTypeAheadState<T>();
 }
 
-class _FormBuilderTypeAheadState<T> extends State<FormBuilderTypeAhead<T>> {
+class _FormBuilderTypeAheadState<T> extends State<FormBuilderTypeAhead<T>> implements FormBuilderBase  {
   TextEditingController _typeAheadController;
   bool _readOnly = false;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
@@ -96,10 +96,17 @@ class _FormBuilderTypeAheadState<T> extends State<FormBuilderTypeAhead<T>> {
   TextEditingController get _effectiveController =>
       widget.controller ?? _typeAheadController;
 
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+    _typeAheadController.text = value.toString() ?? '';
+  }
+
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
 
     _initialValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)

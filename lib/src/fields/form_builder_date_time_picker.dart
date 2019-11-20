@@ -200,7 +200,7 @@ class FormBuilderDateTimePicker extends StatefulWidget {
       _FormBuilderDateTimePickerState();
 }
 
-class _FormBuilderDateTimePickerState extends State<FormBuilderDateTimePicker> {
+class _FormBuilderDateTimePickerState extends State<FormBuilderDateTimePicker>  implements FormBuilderBase {
   bool _readOnly = false;
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   FormBuilderState _formState;
@@ -208,6 +208,18 @@ class _FormBuilderDateTimePickerState extends State<FormBuilderDateTimePicker> {
   FocusNode _focusNode;
   TextEditingController _textFieldController;
   DateTime stateCurrentValue;
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+
+    if(value != null && value != '') {
+      _textFieldController.text = widget.format == null
+          ? DateFormat("EEEE, MMMM d, yyyy 'at' h:mma").format(value)
+          : widget.format.format(value);
+    }
+
+  }
 
   final _dateTimeFormats = {
     InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
@@ -219,7 +231,7 @@ class _FormBuilderDateTimePickerState extends State<FormBuilderDateTimePicker> {
   void initState() {
     super.initState();
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = widget.initialValue ??
         (_formState.initialValue.containsKey(widget.attribute)
             ? _formState.initialValue[widget.attribute]

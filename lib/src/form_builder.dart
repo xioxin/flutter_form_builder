@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 typedef ValueTransformer<T> = dynamic Function(T value);
 
 class FormBuilder extends StatefulWidget {
@@ -40,6 +40,7 @@ class FormBuilderState extends State<FormBuilder> {
   Map<String, dynamic> get initialValue => widget.initialValue;
 
   Map<String, GlobalKey<FormFieldState>> get fields => _fieldKeys;
+  Map<String, FormBuilderBase> _formBuilderFields;
 
   bool get readOnly => widget.readOnly;
 
@@ -47,12 +48,14 @@ class FormBuilderState extends State<FormBuilder> {
   void initState() {
     _fieldKeys = {};
     _value = {};
+    _formBuilderFields = {};
     super.initState();
   }
 
   @override
   void dispose() {
     _fieldKeys = null;
+    _formBuilderFields = null;
     super.dispose();
   }
 
@@ -62,16 +65,38 @@ class FormBuilderState extends State<FormBuilder> {
     });
   }
 
-  registerFieldKey(String attribute, GlobalKey key) {
-    // assert(_fieldKeys.containsKey(attribute) == false, "Field with attribute '$attribute' already exists. Make sure that two or more fields don't have the same attribute name.");
-    this._fieldKeys[attribute] = key;
+  void patchValue(Map<String, dynamic> data) {
+    data.forEach((field, value) {
+      print('patchvalue, $field, $value');
+      if(this._formBuilderFields.containsKey(field) == false) return;
+      print(this._formBuilderFields);
+      this._formBuilderFields[field].setValue(value);
+    });
+  }
+
+  setValue (String field, dynamic value) {
+    this._formBuilderFields[field].setValue(value);
+  }
+
+  dynamic getValue(String field) {
+    if (_fieldKeys.containsKey(field) == false) _value[field];
+    return _fieldKeys[field].currentState.value;
+  }
+
+  registerFieldKey(String attribute, FormBuilderBase formBuilderField) {
+//    this._fieldKeys[attribute] = key;
+    if(formBuilderField is FormBuilderBase) {
+      this._formBuilderFields[attribute] = formBuilderField;
+    }
   }
 
   unregisterFieldKey(String attribute) {
-    this._fieldKeys.remove(attribute);
+//    this._fieldKeys.remove(attribute);
+    this._formBuilderFields.remove(attribute);
   }
 
-  /*changeAttributeValue(String attribute, dynamic newValue) {
+  /*
+  changeAttributeValue(String attribute, dynamic newValue) {
     print(this.fieldKeys[attribute]);
     if (this.fieldKeys[attribute] != null){
       print("Current $attribute value: ${this.fieldKeys[attribute].currentState.value}");

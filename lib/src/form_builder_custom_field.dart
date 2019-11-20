@@ -33,16 +33,22 @@ class FormBuilderCustomField<T> extends StatefulWidget {
       FormBuilderCustomFieldState<T>();
 }
 
-class FormBuilderCustomFieldState<T> extends State<FormBuilderCustomField<T>> {
+class FormBuilderCustomFieldState<T> extends State<FormBuilderCustomField<T>> implements FormBuilderBase {
   final GlobalKey<FormFieldState> _fieldKey = GlobalKey<FormFieldState>();
   FormBuilderState _formState;
   bool readOnly = false;
   T _initialValue;
 
+  get fieldKey => _fieldKey;
+  getValue() => _fieldKey.currentState.value;
+  setValue(value) {
+    _fieldKey.currentState.didChange(value);
+  }
+
   @override
   void initState() {
     _formState = FormBuilder.of(context);
-    _formState?.registerFieldKey(widget.attribute, _fieldKey);
+    _formState?.registerFieldKey(widget.attribute, this);
     _initialValue = widget.formField.initialValue ??
         (widget.initialValue ??
             (_formState.initialValue.containsKey(widget.attribute)
