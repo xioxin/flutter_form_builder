@@ -33,20 +33,25 @@ class FormBuilder extends StatefulWidget {
 class FormBuilderState extends State<FormBuilder> {
   //FIXME: Find way to assert no duplicates in control attributes
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Map<String, GlobalKey<FormFieldState>> _fieldKeys;
-  Map<String, dynamic> _value;
 
+  Map<String, dynamic> _value;
   Map<String, dynamic> get value => _value;
   Map<String, dynamic> get initialValue => widget.initialValue;
 
-  Map<String, GlobalKey<FormFieldState>> get fields => _fieldKeys;
+  Map<String, GlobalKey<FormFieldState>> get fields {
+    return _formBuilderFields.map((k, v) {
+      return MapEntry(k, v.fieldKey);
+    });
+  }
+
+  GlobalKey<FormFieldState> getFieldKey(String k) => _formBuilderFields[k]?.fieldKey;
+
   Map<String, FormBuilderBase> _formBuilderFields;
 
   bool get readOnly => widget.readOnly;
 
   @override
   void initState() {
-    _fieldKeys = {};
     _value = {};
     _formBuilderFields = {};
     super.initState();
@@ -54,7 +59,6 @@ class FormBuilderState extends State<FormBuilder> {
 
   @override
   void dispose() {
-    _fieldKeys = null;
     _formBuilderFields = null;
     super.dispose();
   }
@@ -79,32 +83,18 @@ class FormBuilderState extends State<FormBuilder> {
   }
 
   dynamic getValue(String field) {
-    if (_fieldKeys.containsKey(field) == false) _value[field];
-    return _fieldKeys[field].currentState.value;
+    return _formBuilderFields[field]?.getValue();
   }
 
   registerFieldKey(String attribute, FormBuilderBase formBuilderField) {
-//    this._fieldKeys[attribute] = key;
     if(formBuilderField is FormBuilderBase) {
       this._formBuilderFields[attribute] = formBuilderField;
     }
   }
 
   unregisterFieldKey(String attribute) {
-//    this._fieldKeys.remove(attribute);
     this._formBuilderFields.remove(attribute);
   }
-
-  /*
-  changeAttributeValue(String attribute, dynamic newValue) {
-    print(this.fieldKeys[attribute]);
-    if (this.fieldKeys[attribute] != null){
-      print("Current $attribute value: ${this.fieldKeys[attribute].currentState.value}");
-      print("Trying to change $attribute to $newValue");
-      this.fieldKeys[attribute].currentState.didChange(newValue);
-      print("$attribute value after: ${this.fieldKeys[attribute].currentState.value}");
-    }
-  }*/
 
   void save() {
     _formKey.currentState.save();
