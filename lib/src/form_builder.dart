@@ -82,6 +82,10 @@ class FormBuilderState extends State<FormBuilder> {
     this._formBuilderFields[field].setValue(value);
   }
 
+//  requestFocus (String field) {
+//    this._formBuilderFields[field].requestFocus();
+//  }
+
   dynamic getValue(String field) {
     return _formBuilderFields[field]?.getValue();
   }
